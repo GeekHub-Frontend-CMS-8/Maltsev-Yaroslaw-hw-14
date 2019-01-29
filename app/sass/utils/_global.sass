@@ -1,0 +1,40 @@
+*
+  margin: 0
+  +text-properties($mobile-font-size, $main-font, $main-color, $main-weight)
+  @media screen and (min-width: $media-mobile)
+    font-size: $main-font-size
+li
+  list-style: none
+.wrapper
+  max-width: 300px
+  margin: 0 auto
+  padding: 5px
+  overflow: hidden
+  @media screen and (min-width: $media-mobile)
+    max-width: 1170px  
+a
+  text-decoration: none !important
+.img
+  background-size: 100% 100%
+.adaptive-img
+  width: 100%
+  height: auto
+.page-section
+  padding-top: 200px
+.input
+  padding: 15px 20px
+  margin-bottom: 20px
+  background-color: #68a097
+  color: #82c8bd
+  font-size: 16px
+  font-weight: 400
+  &:focus
+    background: #fff
+.textarea
+  padding: 15px 20px
+  background-color: #68a097
+  color: #82c8bd
+  font-size: 16px
+  font-weight: 400  
+  &:focus
+    background: #fff 
