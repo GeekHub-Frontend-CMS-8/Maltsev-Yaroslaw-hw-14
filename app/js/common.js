@@ -1,4 +1,5 @@
 let bricksNumber,
+qMove = 0,
 itemList = [],
 towerList = [{
 	queue: 0,
@@ -58,6 +59,10 @@ function render() {
 			z-index: 1000;"></div>
 		`)
 	};
+	$('.move').empty()
+	$('.move').prepend(`
+		<p>Moves: ${qMove}</p>
+		`)
 }
 // top: ${itemList[i].queueNumber * 50 + 200}px;
 
@@ -89,8 +94,6 @@ var DragManager = new function() {
 		// запомним, что элемент нажат на текущих координатах pageX/pageY
 		dragObject.downX = e.pageX;
 		dragObject.downY = e.pageY;
-
-		console.log(dragObject)
 
 		return false;
 	}
@@ -224,13 +227,30 @@ var DragManager = new function() {
 		towerIndex = tower.getAttribute('data-tower-number');
 
 		if (towerList[itemPosition - 1] != towerList[towerIndex - 1]) {
-			towerList[itemPosition - 1].queue -= 1 //Башня, з якої переносили
-			itemList[itemIndex].position = Number(towerIndex);
-			towerList[towerIndex - 1].queue += 1; //Башня, на яку переносили
+			if (towerList[itemPosition - 1].indexList[0] == Number(itemIndex)) {
+				/*console.log('towerList[towerIndex - 1].indexList')
+				console.log(towerList[towerIndex - 1].indexList)*/
+				if (towerList[towerIndex - 1].indexList.length == 0 || Number(itemIndex) < towerList[towerIndex - 1].indexList[0]) {
+					qMove += 1
 
-			itemList[itemIndex].queueNumber = bricksNumber - towerList[towerIndex - 1].queue + 1
-			towerList[towerIndex - 1].indexList.push(Number(itemIndex))
-			towerList[itemPosition - 1].indexList.splice(0, 1)
+					towerList[itemPosition - 1].queue -= 1 //Башня, з якої переносили
+					itemList[itemIndex].position = Number(towerIndex);
+					towerList[towerIndex - 1].queue += 1; //Башня, на яку переносили
+
+					itemList[itemIndex].queueNumber = bricksNumber - towerList[towerIndex - 1].queue + 1
+					towerList[towerIndex - 1].indexList.unshift(Number(itemIndex))
+					towerList[itemPosition - 1].indexList.splice(0, 1)
+				}
+				/*qMove += 1
+
+				towerList[itemPosition - 1].queue -= 1 //Башня, з якої переносили
+				itemList[itemIndex].position = Number(towerIndex);
+				towerList[towerIndex - 1].queue += 1; //Башня, на яку переносили
+
+				itemList[itemIndex].queueNumber = bricksNumber - towerList[towerIndex - 1].queue + 1
+				towerList[towerIndex - 1].indexList.unshift(Number(itemIndex))
+				towerList[itemPosition - 1].indexList.splice(0, 1)	*/			
+			}
 		}
 
 		render()
