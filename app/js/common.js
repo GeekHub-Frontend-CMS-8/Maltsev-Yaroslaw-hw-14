@@ -1,5 +1,9 @@
 let bricksNumber,
 qMove = 0,
+startTimer = false,
+seconds = 0,
+minutes = 0,
+hours = 0,
 itemList = [],
 towerList = [{
 	queue: 0,
@@ -15,9 +19,40 @@ towerList = [{
 }],
 doc = document;
 
+function timeRender() {
+	$('.time').empty()
+	$('.time').prepend(`
+		<p>Time: ${hours}:${minutes}:${seconds}</p>
+		`)	
+}
+
+function timer () {
+	setInterval(function() {
+		if(document.onmousedown == true) {
+			clearInterval(this)
+		}
+		else {
+			seconds++
+			if (seconds % 60 == 0) {
+				seconds = 0
+				minutes++
+			}
+			else if (seconds % 3600 == 0) {
+				seconds = 0
+				minutes = 0
+				hours++
+			}		
+		}
+		timeRender()
+	}, 1000)	
+}
+
 let inputNumber = doc.getElementById('inputNumber')
 
 inputNumber.onchange = function() {
+	timeRender()
+	timer()
+
 	bricksNumber = Number(this.value)
 	towerList[1].queue = bricksNumber
 	itemList = [];
@@ -38,7 +73,7 @@ inputNumber.onchange = function() {
 		})
 		towerList[1].indexList.push(i)
 	}
-	render()	
+	render()
 }
 
 function render() {
