@@ -1,9 +1,14 @@
 let bricksNumber,
+qWins = 0,
 qMove = 0,
 startTimer = false,
 seconds = 0,
 minutes = 0,
 hours = 0,
+scoresList = [],
+scoreNow = 0,
+bestScore = 0,
+startPos = 1,
 itemList = [],
 towerList = [{
 	queue: 0,
@@ -19,30 +24,39 @@ towerList = [{
 }],
 doc = document;
 
+let localStorageItem = localStorage.getItem("itemList"),
+		localStorageTower = localStorage.getItem("towerList");
+
+if (localStorageItem != null) {
+	itemList = JSON.parse(localStorageItem);
+	render()
+}
+if (localStorageTower != null) {
+	towerList = JSON.parse(localStorageTower);
+	render()
+}
+
+function addToLocal() {
+	localStorage.clear();
+	localStorage.setItem("towerList", JSON.stringify(towerList));
+	localStorage.setItem("itemList", JSON.stringify(itemList));
+	localStorage.setItem("qWins", JSON.stringify(qWins));
+}
+
 function timeRender() {
 	$('.time').empty()
 	$('.time').prepend(`
-		<p>Time: ${hours}:${minutes}:${seconds}</p>
+		<p>Time: ${minutes}:${seconds}</p>
 		`)	
 }
 
 function timer () {
 	setInterval(function() {
-		if(document.onmousedown == true) {
-			clearInterval(this)
-		}
-		else {
-			seconds++
-			if (seconds % 60 == 0) {
-				seconds = 0
-				minutes++
-			}
-			else if (seconds % 3600 == 0) {
-				seconds = 0
-				minutes = 0
-				hours++
-			}		
-		}
+		seconds++
+		if (seconds % 60 == 0) {
+			seconds = 0
+			minutes++
+		};
 		timeRender()
 	}, 1000)	
 }
@@ -98,6 +112,10 @@ function render() {
 	$('.move').prepend(`
 		<p>Moves: ${qMove}</p>
 		`)
+	$('.wins').empty()
+	$('.wins').prepend(`
+		<p>Wins: ${qWins}</p>
+		`)	
 }
 // top: ${itemList[i].queueNumber * 50 + 200}px;
 
@@ -263,8 +281,6 @@ var DragManager = new function() {
 
 		if (towerList[itemPosition - 1] != towerList[towerIndex - 1]) {
 			if (towerList[itemPosition - 1].indexList[0] == Number(itemIndex)) {
-				/*console.log('towerList[towerIndex - 1].indexList')
-				console.log(towerList[towerIndex - 1].indexList)*/
 				if (towerList[towerIndex - 1].indexList.length == 0 || Number(itemIndex) < towerList[towerIndex - 1].indexList[0]) {
 					qMove += 1
 
@@ -275,19 +291,41 @@ var DragManager = new function() {
 					itemList[itemIndex].queueNumber = bricksNumber - towerList[towerIndex - 1].queue + 1
 					towerList[towerIndex - 1].indexList.unshift(Number(itemIndex))
 					towerList[itemPosition - 1].indexList.splice(0, 1)
-				}
-				/*qMove += 1
-
-				towerList[itemPosition - 1].queue -= 1 //Башня, з якої переносили
-				itemList[itemIndex].position = Number(towerIndex);
-				towerList[towerIndex - 1].queue += 1; //Башня, на яку переносили
-
-				itemList[itemIndex].queueNumber = bricksNumber - towerList[towerIndex - 1].queue + 1
-				towerList[towerIndex - 1].indexList.unshift(Number(itemIndex))
-				towerList[itemPosition - 1].indexList.splice(0, 1)	*/			
+				}		
 			}
 		}
+		if (towerList[towerIndex - 1].indexList.length == bricksNumber) {
+			let winWindow = document.getElementsByClassName('win-window');
+			console.log(winWindow)
+			if (towerList[towerIndex - 1].indexList[0] != startPos) {
+				qWins++
+				$('.win-window').empty()
+				$('.win-window').prepend(`
+					<div style="background: #FF7171;
+											z-index: 100000;
+											position: fixed;
+											display: flex;
+											justify-content: center;
+											align-items: center;
+											flex-flow: column;
+											width: 100%;
+											height: 100%;
+											height: 500px;
+											">
 
+						<p style="font-size: 100px;
+											color: yellow;">
+							WIN!
+						</p>
+						<p style="font-size: 50px;
+											color: red;">
+							Score: ${scoreNow}
+						</p>						
+					</div>
+					`)					
+			}
+		}
+		// addToLocal()
 		render()
 		dragObject.elem.hidden = true;
 		dragObject = {};
